@@ -13,6 +13,6 @@ The scripts listed in this section are used to process or extract data relevant 
 
 1. `process_connections.py`: This script processes the connections data from the Rucio metrics file.
 The script reads the transfer metrics data from a JSON file, produced by Rucio, and generates another JSON file that
-contains the connections and their bandwidths. A pre-requisite for running this script is the Rucio metrics file itself,
-which can be obtained from the Rucio server.
+contains the connections and their bandwidths. Typically the metrics data is downloaded once per week. The script can
+loop over multiple metrics files.
 2. ..
