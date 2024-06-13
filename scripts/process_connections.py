@@ -15,6 +15,7 @@ def write_dict_to_json(data_dict, file_path):
         json.dump(data_dict, json_file, indent=2)  # 'indent' parameter is used for pretty formatting
 
 
+# input_files = ['latest.json']
 input_files = [
     'latest-01.10.2024.json',
     'latest-01.23.2024.json',
