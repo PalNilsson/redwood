@@ -4,15 +4,29 @@ import json
 import os
 
 
-def read_json_to_dict(file_path):
+def read_json_to_dict(file_path: str) -> dict:
+    """
+    Read a json file to a dictionary.
+
+    :param file_path: file path (str)
+    :return: json dictionary from file (dict).
+    """
     with open(file_path, 'r') as json_file:
         data_dict = json.load(json_file)
+
     return data_dict
 
 
-def write_dict_to_json(data_dict, file_path):
+def write_dict_to_json(data_dict: dict, file_path: str):
+    """
+    Write a dictionary to a json file.
+
+    :param data_dict: data dictionary (dict)
+    :param file_path: file path (str).
+    """
+    print(f'writing dictionary to {file_path}')
     with open(file_path, 'w') as json_file:
-        json.dump(data_dict, json_file, indent=2)  # 'indent' parameter is used for pretty formatting
+        json.dump(data_dict, json_file, indent=2)
 
 
 # input_files = ['latest.json']
@@ -82,15 +96,14 @@ for file_name in input_files:
         all_connections[connection].append(dashb)
 
 empty = 0
-names = []
+# names = []
 for connection in all_connections.keys():
 
     bandwidths = all_connections[connection]
-#    print(f'connection={connection} bandwidths={bandwidths}')
+    # print(f'connection={connection} bandwidths={bandwidths}')
     if not bandwidths:
         empty += 1
-#        names.append(connection)
+        # names.append(connection)
+
 print(f'There were {empty} empty connections out of a total of {len(all_connections.keys())}')
-#print(names)
-file_path = 'combined_connections.json'
-write_dict_to_json(all_connections, file_path)
+write_dict_to_json(all_connections, 'combined_connections.json')
