@@ -13,7 +13,7 @@ def read_csv_to_dict(file_path: str) -> dict:
     :return: output dictionary (dict).
     """
     data_dict = {}
-    with open(file_path, 'r') as csv_file:
+    with open(file_path, 'r', encoding='utf-8') as csv_file:
         reader = csv.DictReader(csv_file)
 
         # Skip the second line full of commas
@@ -37,7 +37,7 @@ def find_max_values(data_dict: dict) -> dict:
     """
     max_values = {}
 
-    for timestamp, data in data_dict.items():
+    for _, data in data_dict.items():
         for key, value in data.items():
             # Check if the value is an integer before comparing
             if isinstance(value, int):
@@ -54,25 +54,25 @@ def write_dict_to_json(data_dict: dict, file_path: str):
     :param data_dict: data dictionary (dict)
     :param file_path: path to the JSON file (str)
     """
-    with open(file_path, 'w') as json_file:
+    with open(file_path, 'w', encoding='utf-8') as json_file:
         json.dump(data_dict, json_file, indent=2)
 
 
-#file_path = 'grafana-7days.csv'
-#file_path = 'grafana-1year.csv'
-file_path = 'grafana-6months.csv'
-result_dict = read_csv_to_dict(file_path)
+# path = 'grafana-7days.csv'
+# path = 'grafana-1year.csv'
+path = 'grafana-6months.csv'
+result_dict = read_csv_to_dict(path)
 
 # Display the resulting dictionary
-#for timestamp, data in result_dict.items():
-#    print(f"Timestamp: {timestamp}, Data: {data}")
+# for timestamp, data in result_dict.items():
+#     print(f"Timestamp: {timestamp}, Data: {data}")
 
-max_values = find_max_values(result_dict)
+_max_values = find_max_values(result_dict)
 
 # Display the maximum values
-for key, value in max_values.items():
-    print(f"Max value for {key}: {value}")
+for _key, _value in _max_values.items():
+    print(f"Max value for {_key}: {_value}")
 
-print(len(max_values.items()))
+print(len(_max_values.items()))
 
-write_dict_to_json(max_values, 'number_of_cpus.json')
+write_dict_to_json(_max_values, 'number_of_cpus.json')

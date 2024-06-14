@@ -11,7 +11,7 @@ def read_json_to_dict(file_path: str) -> dict:
     :param file_path: file path (str)
     :return: json dictionary from file (dict).
     """
-    with open(file_path, 'r') as json_file:
+    with open(file_path, 'r', encoding='utf-8') as json_file:
         data_dict = json.load(json_file)
 
     return data_dict
@@ -25,7 +25,7 @@ def write_dict_to_json(data_dict: dict, file_path: str):
     :param file_path: file path (str).
     """
     print(f'writing dictionary to {file_path}')
-    with open(file_path, 'w') as json_file:
+    with open(file_path, 'w', encoding='utf-8') as json_file:
         json.dump(data_dict, json_file, indent=2)
 
 
@@ -97,9 +97,7 @@ for file_name in input_files:
 
 empty = 0
 # names = []
-for connection in all_connections.keys():
-
-    bandwidths = all_connections[connection]
+for connection, bandwidths in all_connections.items():
     # print(f'connection={connection} bandwidths={bandwidths}')
     if not bandwidths:
         empty += 1

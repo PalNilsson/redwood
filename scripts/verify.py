@@ -13,7 +13,7 @@ def read_json_to_dict(file_path: str) -> dict:
     :param file_path: path to the JSON file (str)
     :return: data dictionary (dict).
     """
-    with open(file_path, 'r') as json_file:
+    with open(file_path, 'r', encoding='utf-8') as json_file:
         data_dict = json.load(json_file)
 
     return data_dict

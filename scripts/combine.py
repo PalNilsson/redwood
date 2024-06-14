@@ -15,7 +15,7 @@ def read_json_to_dict(file_path: str) -> dict:
     :param file_path: path to the JSON file (str)
     :return: data dictionary (dict).
     """
-    with open(file_path, 'r') as json_file:
+    with open(file_path, 'r', encoding='utf-8') as json_file:
         data_dict = json.load(json_file)
 
     return data_dict
@@ -28,7 +28,7 @@ def write_dict_to_json(data_dict: dict, file_path: str):
     :param data_dict: data dictionary (dict)
     :param file_path: path to the JSON file (str)
     """
-    with open(file_path, 'w') as json_file:
+    with open(file_path, 'w', encoding='utf-8') as json_file:
         json.dump(data_dict, json_file, indent=2)  # 'indent' parameter is used for pretty formatting
 
 
@@ -78,7 +78,7 @@ for queue in queues_and_rses:
         combined[queue] = {}
         combined[queue]['RSE'] = rses.get('RSE')
         combined[queue]['GFLOPS'] = int(gflops) * int(n_cpus) * scale_factor
-    except Exception as exc:
+    except (TypeError, ValueError) as exc:
         print(f'exception caught: {exc}')
 
 print(f'combined info for {len(combined.keys())} queues')
