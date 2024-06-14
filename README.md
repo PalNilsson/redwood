@@ -28,3 +28,7 @@ per queue, with the total number of cores (`queue_corecount.json` from pilot job
 core power is the average benchmark per core for a queue. It is not however proportional to GFLOPS, but is the best
 measurement we have using real data. The script also combines the RSE info from the Rucio transfer metrics
 (`queues_and_rses.json`). The script produces the file `queues-corepower_based.json`.
+4. <b>Consistency</b>: `verify.py`: Verify the consistency of the data in the `queues-corepower_based.json` file. The
+script verifies that are "GFLOPS" and "RSE" entries for all queues in the file. The script also calculates the number
+of queues.
+
