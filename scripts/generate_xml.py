@@ -51,17 +51,18 @@ def generate_xml(filename: str, num_fields: int):
     :param filename: file name to write the XML to (str)
     :param num_fields: number of fields to generate (int).
     """
-    # Create the root element
-    root = ET.Element("root")
+    # Create the platform element with version attribute
+    platform = ET.Element("platform")
+    platform.set("version", "4.1")
 
     # Generate the specified number of fields
     for i in range(1, num_fields + 1):
-        field = ET.SubElement(root, "field")
+        field = ET.SubElement(platform, "field")
         field.set("node", f"compute_node_{i}")
         field.set("bandwidth", "1000Mbps")
 
     # Pretty print the XML
-    pretty_xml = prettify(root)
+    pretty_xml = prettify(platform)
 
     # Add the XML declaration and DOCTYPE
     xml_declaration = "<?xml version='1.0'?>\n<!DOCTYPE platform SYSTEM \"https://simgrid.org/simgrid.dtd\">\n"
