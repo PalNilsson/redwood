@@ -1,9 +1,31 @@
-# Combine GFLOPS, number of CPUs and RSE info into one file.
-# The total GFLOPS number is calculated by multiplying the GFLOPS number per CPU with
-# the total number of CPUs.
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+# Author:
+# - Paul Nilsson, paul.nilsson@cern.ch, 2024
 
-# use queue_corecount.json for number of cores per queue
-# use corepower.json for corepower, ie the average benchmark per core for a queue
+"""
+Combine GFLOPS, number of CPUs and RSE info into one file.
+The total GFLOPS number is calculated by multiplying the GFLOPS number per CPU with
+the total number of CPUs.
+
+Use queue_corecount.json for number of cores per queue
+Use corepower.json for corepower, ie the average benchmark per core for a queue
+"""
 
 import json
 
