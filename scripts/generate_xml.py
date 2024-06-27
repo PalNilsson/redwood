@@ -26,6 +26,22 @@ Usage: python generate_xml.py --filename <filename> --nodes <number of nodes>
 
 import argparse
 import xml.etree.ElementTree as ET
+from xml.dom import minidom
+
+
+def prettify(elem: ET.Element) -> str:
+    """
+    Return a pretty-printed XML string for the Element.
+
+    :param elem: XML element (ET.Element)
+    :return: pretty-printed XML string (str).
+    """
+    rough_string = ET.tostring(elem, 'utf-8')
+    reparsed = minidom.parseString(rough_string)
+    pretty_string = reparsed.toprettyxml(indent="  ")
+
+    # Remove the XML declaration added by minidom
+    return '\n'.join(pretty_string.split('\n')[1:])
 
 
 def generate_xml(filename: str, num_fields: int):
@@ -44,11 +60,16 @@ def generate_xml(filename: str, num_fields: int):
         field.set("node", f"compute_node_{i}")
         field.set("bandwidth", "1000Mbps")
 
-    # Create an ElementTree object
-    tree = ET.ElementTree(root)
+    # Pretty print the XML
+    pretty_xml = prettify(root)
 
-    # Write the tree to the output file
-    tree.write(filename)
+    # Add the XML declaration and DOCTYPE
+    xml_declaration = "<?xml version='1.0'?>\n<!DOCTYPE platform SYSTEM \"https://simgrid.org/simgrid.dtd\">\n"
+    full_xml = xml_declaration + pretty_xml
+
+    # Write the pretty-printed XML to the output file
+    with open(filename, 'w') as f:
+        f.write(full_xml)
 
 
 def main():
