@@ -32,4 +32,5 @@ measurement we have using real data. The script also combines the RSE info from 
 5. <b>Consistency</b>: `verify.py`: Verify the consistency of the data in the `queues-corepower_based.json` file. The
 script verifies that are "GFLOPS" and "RSE" entries for all queues in the file. The script also calculates the number
 of queues.
-
+6. <b>XML generation</b>. `generate_xml.py`: Generate an XML file to be used for scaling tests. The script produces
+a platform file, `platform.xml`, that contains a selectable number of hosts and their connections.
