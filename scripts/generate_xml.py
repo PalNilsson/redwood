@@ -20,6 +20,7 @@
 
 """
 Generate platform XML for WRENCH simulations.
+
 Usage: python generate_xml.py --filename <filename> --nodes <number of nodes>
 """
 
@@ -27,7 +28,13 @@ import argparse
 import xml.etree.ElementTree as ET
 
 
-def generate_xml(filename, num_fields):
+def generate_xml(filename: str, num_fields: int):
+    """
+    Generate a trivial XML file with a specified number of fields.
+
+    :param filename: file name to write the XML to (str)
+    :param num_fields: number of fields to generate (int).
+    """
     # Create the root element
     root = ET.Element("root")
 
@@ -45,6 +52,7 @@ def generate_xml(filename, num_fields):
 
 
 def main():
+    """Perform main actions for the script."""
     # Set up argument parsing
     parser = argparse.ArgumentParser(description='Generate a trivial XML file.')
     parser.add_argument('--filename', type=str, required=True, help='The name of the output XML file.')
