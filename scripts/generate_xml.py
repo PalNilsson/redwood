@@ -38,7 +38,7 @@ def prettify(elem: ET.Element) -> str:
     """
     rough_string = ET.tostring(elem, 'utf-8')
     reparsed = minidom.parseString(rough_string)
-    pretty_string = reparsed.toprettyxml(indent="  ")
+    pretty_string = reparsed.toprettyxml(indent="    ")  # Four spaces indentation
 
     # Remove the XML declaration added by minidom
     return '\n'.join(pretty_string.split('\n')[1:])
@@ -55,11 +55,30 @@ def generate_xml(filename: str, num_fields: int):
     platform = ET.Element("platform")
     platform.set("version", "4.1")
 
-    # Generate the specified number of fields
+    # Create the zone element
+    zone = ET.SubElement(platform, "zone")
+    zone.set("id", "AS0")
+    zone.set("routing", "Full")
+
+    # Add the controller host element with comment
+    comment = ET.Comment(" The host on which the Controller will run ")
+    zone.append(comment)
+    controller_host = ET.SubElement(zone, "host")
+    controller_host.set("id", "UserHost")
+    controller_host.set("speed", "10Gf")
+    controller_host.set("core", "1")
+
+    # Generate the specified number of hosts
     for i in range(1, num_fields + 1):
-        field = ET.SubElement(platform, "field")
-        field.set("node", f"compute_node_{i}")
-        field.set("bandwidth", "1000Mbps")
+        host = ET.SubElement(zone, "host")
+        host.set("id", f"ComputeHost{i}")
+        host.set("speed", "35Gf")
+        host.set("core", "10")
+
+        # Add the nested prop element
+        prop = ET.SubElement(host, "prop")
+        prop.set("id", "ram")
+        prop.set("value", "16GB")
 
     # Pretty print the XML
     pretty_xml = prettify(platform)
@@ -68,7 +87,7 @@ def generate_xml(filename: str, num_fields: int):
     xml_declaration = "<?xml version='1.0'?>\n<!DOCTYPE platform SYSTEM \"https://simgrid.org/simgrid.dtd\">\n"
     full_xml = xml_declaration + pretty_xml
 
-    # Write the pretty-printed XML to the output file
+    # Write the full XML to the output file
     with open(filename, 'w') as f:
         f.write(full_xml)
 
