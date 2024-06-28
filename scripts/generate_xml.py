@@ -84,8 +84,8 @@ def generate_xml(filename: str, num_fields: int):
 
     # Generate the specified number of ComputeHosts
     for i in range(1, num_fields + 1):
-        # comment = ET.Comment(f" Another host on which the bare-metal compute service will be able to run jobs ")
-        # zone.append(comment)
+        comment = ET.Comment(" Another host on which the bare-metal compute service will be able to run jobs ")
+        zone.append(comment)
 
         host = ET.SubElement(zone, "host")
         host.set("id", f"ComputeHost{i}")
@@ -97,16 +97,43 @@ def generate_xml(filename: str, num_fields: int):
         prop.set("id", "ram")
         prop.set("value", "16GB")
 
-        # Add an empty line after each ComputeHost, except the last one
-        # if i < num_fields:
-        #     zone.append(ET.Comment(""))  # Empty line represented by an empty comment
+    # Add an empty line after the compute hosts
+    zone.append(ET.Comment(""))
+
+    # Generate the specified number of StorageHosts
+    for i in range(1, num_fields + 1):
+        comment = ET.Comment(" The host on which the first storage service will run ")
+        zone.append(comment)
+
+        host = ET.SubElement(zone, "host")
+        host.set("id", f"StorageHost{i}")
+        host.set("speed", "10Gf")
+        host.set("core", "1")
+
+        # Add the nested disk element with its properties
+        disk = ET.SubElement(host, "disk")
+        disk.set("id", "hard_drive")
+        disk.set("read_bw", "100MBps")
+        disk.set("write_bw", "100MBps")
+
+        prop_size = ET.SubElement(disk, "prop")
+        prop_size.set("id", "size")
+        prop_size.set("value", "5000GiB")
+
+        prop_mount = ET.SubElement(disk, "prop")
+        prop_mount.set("id", "mount")
+        prop_mount.set("value", "/")
 
     # Pretty print the XML
     pretty_xml = prettify(platform)
 
+    # Add the XML declaration and DOCTYPE
+    xml_declaration = "<?xml version='1.0'?>\n<!DOCTYPE platform SYSTEM \"https://simgrid.org/simgrid.dtd\">\n"
+    full_xml = xml_declaration + pretty_xml
+
     # Write the full XML to the output file
     with open(filename, 'w') as f:
-        f.write(pretty_xml)
+        f.write(full_xml)
 
 
 def main():
