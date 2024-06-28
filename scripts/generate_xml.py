@@ -97,9 +97,6 @@ def generate_xml(filename: str, num_fields: int):
         prop.set("id", "ram")
         prop.set("value", "16GB")
 
-    # Add an empty line after the compute hosts
-    zone.append(ET.Comment(""))
-
     # Generate the specified number of StorageHosts
     for i in range(1, num_fields + 1):
         comment = ET.Comment(" The host on which the first storage service will run ")
@@ -124,6 +121,37 @@ def generate_xml(filename: str, num_fields: int):
         prop_mount.set("id", "mount")
         prop_mount.set("value", "/")
 
+    # Add the cloud compute service hosts
+    cloud_comment1 = ET.Comment(" The host on which the cloud compute service will run ")
+    zone.append(cloud_comment1)
+    cloud_head_host = ET.SubElement(zone, "host")
+    cloud_head_host.set("id", "CloudHeadHost")
+    cloud_head_host.set("speed", "10Gf")
+    cloud_head_host.set("core", "1")
+
+    cloud_disk = ET.SubElement(cloud_head_host, "disk")
+    cloud_disk.set("id", "hard_drive")
+    cloud_disk.set("read_bw", "100MBps")
+    cloud_disk.set("write_bw", "100MBps")
+
+    cloud_prop_size = ET.SubElement(cloud_disk, "prop")
+    cloud_prop_size.set("id", "size")
+    cloud_prop_size.set("value", "5000GiB")
+
+    cloud_prop_mount = ET.SubElement(cloud_disk, "prop")
+    cloud_prop_mount.set("id", "mount")
+    cloud_prop_mount.set("value", "/scratch/")
+
+    cloud_comment2 = ET.Comment(" The host on which the cloud compute service will start VMs ")
+    zone.append(cloud_comment2)
+    cloud_host = ET.SubElement(zone, "host")
+    cloud_host.set("id", "CloudHost")
+    cloud_host.set("speed", "25Gf")
+    cloud_host.set("core", "8")
+
+    cloud_ram_prop = ET.SubElement(cloud_host, "prop")
+    cloud_ram_prop.set("id", "ram")
+    cloud_ram_prop.set("value", "16GB")
     # Pretty print the XML
     pretty_xml = prettify(platform)
 
