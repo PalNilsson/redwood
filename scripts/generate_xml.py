@@ -36,12 +36,26 @@ def prettify(elem: ET.Element) -> str:
     :param elem: XML element (ET.Element)
     :return: pretty-printed XML string (str).
     """
+    #rough_string = ET.tostring(elem, 'utf-8')
+    #reparsed = minidom.parseString(rough_string)
+    #pretty_string = reparsed.toprettyxml(indent="    ")  # Four spaces indentation
+
+    # Remove the XML declaration added by minidom
+    #return '\n'.join([line for line in pretty_string.split('\n') if line.strip()])
+
     rough_string = ET.tostring(elem, 'utf-8')
     reparsed = minidom.parseString(rough_string)
     pretty_string = reparsed.toprettyxml(indent="    ")  # Four spaces indentation
-
     # Remove the XML declaration added by minidom
-    return '\n'.join(pretty_string.split('\n')[1:])
+    lines = pretty_string.split('\n')
+    pretty_lines = []
+    for line in lines:
+        if line.strip() and not line.startswith('<?'):
+            pretty_lines.append(line)
+            # Add an empty line after each host element
+            if line.strip().startswith('</host>') or line.strip().startswith('</zone>'):
+                pretty_lines.append('')
+    return '\n'.join(pretty_lines).strip()
 
 
 def generate_xml(filename: str, num_fields: int):
@@ -61,15 +75,18 @@ def generate_xml(filename: str, num_fields: int):
     zone.set("routing", "Full")
 
     # Add the controller host element with comment
-    comment = ET.Comment(" The host on which the Controller will run ")
-    zone.append(comment)
+    comment1 = ET.Comment(" The host on which the Controller will run ")
+    zone.append(comment1)
     controller_host = ET.SubElement(zone, "host")
     controller_host.set("id", "UserHost")
     controller_host.set("speed", "10Gf")
     controller_host.set("core", "1")
 
-    # Generate the specified number of hosts
+    # Generate the specified number of ComputeHosts
     for i in range(1, num_fields + 1):
+        # comment = ET.Comment(f" Another host on which the bare-metal compute service will be able to run jobs ")
+        # zone.append(comment)
+
         host = ET.SubElement(zone, "host")
         host.set("id", f"ComputeHost{i}")
         host.set("speed", "35Gf")
@@ -80,16 +97,16 @@ def generate_xml(filename: str, num_fields: int):
         prop.set("id", "ram")
         prop.set("value", "16GB")
 
+        # Add an empty line after each ComputeHost, except the last one
+        # if i < num_fields:
+        #     zone.append(ET.Comment(""))  # Empty line represented by an empty comment
+
     # Pretty print the XML
     pretty_xml = prettify(platform)
 
-    # Add the XML declaration and DOCTYPE
-    xml_declaration = "<?xml version='1.0'?>\n<!DOCTYPE platform SYSTEM \"https://simgrid.org/simgrid.dtd\">\n"
-    full_xml = xml_declaration + pretty_xml
-
     # Write the full XML to the output file
     with open(filename, 'w') as f:
-        f.write(full_xml)
+        f.write(pretty_xml)
 
 
 def main():
