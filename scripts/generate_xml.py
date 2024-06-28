@@ -43,6 +43,20 @@ def prettify(elem: ET.Element) -> str:
     # Remove the XML declaration added by minidom
     #return '\n'.join([line for line in pretty_string.split('\n') if line.strip()])
 
+    #rough_string = ET.tostring(elem, 'utf-8')
+    #reparsed = minidom.parseString(rough_string)
+    #pretty_string = reparsed.toprettyxml(indent="    ")  # Four spaces indentation
+    # Remove the XML declaration added by minidom
+    #lines = pretty_string.split('\n')
+    #pretty_lines = []
+    #for line in lines:
+    #    if line.strip() and not line.startswith('<?'):
+    #        pretty_lines.append(line)
+    #        # Add an empty line after each host element
+    #        if line.strip().startswith('</host>') or line.strip().startswith('</zone>'):
+    #            pretty_lines.append('')
+    #return '\n'.join(pretty_lines).strip()
+
     rough_string = ET.tostring(elem, 'utf-8')
     reparsed = minidom.parseString(rough_string)
     pretty_string = reparsed.toprettyxml(indent="    ")  # Four spaces indentation
@@ -52,9 +66,11 @@ def prettify(elem: ET.Element) -> str:
     for line in lines:
         if line.strip() and not line.startswith('<?'):
             pretty_lines.append(line)
-            # Add an empty line after each host element
-            if line.strip().startswith('</host>') or line.strip().startswith('</zone>'):
+            # Add an empty line after each host element and comment
+            if line.strip().startswith('</host>') or line.strip().startswith('</zone>') or line.strip().startswith(
+                    '</link>'):
                 pretty_lines.append('')
+
     return '\n'.join(pretty_lines).strip()
 
 
@@ -160,6 +176,68 @@ def generate_xml(filename: str, num_fields: int):
     network_link.set("id", "network_link")
     network_link.set("bandwidth", "50MBps")
     network_link.set("latency", "1ms")
+
+    #
+    network_comment = ET.Comment(" The same network link connects all hosts together ")
+    zone.append(network_comment)
+
+    # Add routes for each compute host
+    for i in range(1, num_fields + 1):
+        route = ET.Element("route")
+        route.set("src", "UserHost")
+        route.set("dst", f"ComputeHost{i}")
+        link_ctn = ET.SubElement(route, "link_ctn")
+        link_ctn.set("id", "network_link")
+        # Append the route directly to the zone element
+        zone.append(route)
+
+    # Add routes for each storage host
+    for i in range(1, num_fields + 1):
+        route = ET.Element("route")
+        route.set("src", "UserHost")
+        route.set("dst", f"StorageHost{i}")
+        link_ctn = ET.SubElement(route, "link_ctn")
+        link_ctn.set("id", "network_link")
+        # Append the route directly to the zone element
+        zone.append(route)
+
+    # Add route for the cloud head host
+    route = ET.Element("route")
+    route.set("src", "UserHost")
+    route.set("dst", "CloudHeadHost")
+    link_ctn = ET.SubElement(route, "link_ctn")
+    link_ctn.set("id", "network_link")
+    # Append the route directly to the zone element
+    zone.append(route)
+
+    # Add routes from compute to storage hosts
+    for i in range(1, num_fields + 1):
+        route = ET.Element("route")
+        route.set("src", f"ComputeHost{i}")
+        route.set("dst", f"StorageHost{i}")
+        link_ctn = ET.SubElement(route, "link_ctn")
+        link_ctn.set("id", "network_link")
+        # Append the route directly to the zone element
+        zone.append(route)
+
+    # Add route from cloud head to cloud host
+    route = ET.Element("route")
+    route.set("src", "CloudHeadHost")
+    route.set("dst", "CloudHost")
+    link_ctn = ET.SubElement(route, "link_ctn")
+    link_ctn.set("id", "network_link")
+    # Append the route directly to the zone element
+    zone.append(route)
+
+    # Add routes from storage hosts to cloud host
+    for i in range(1, num_fields + 1):
+        route = ET.Element("route")
+        route.set("src", f"StorageHost{i}")
+        route.set("dst", "CloudHost")
+        link_ctn = ET.SubElement(route, "link_ctn")
+        link_ctn.set("id", "network_link")
+        # Append the route directly to the zone element
+        zone.append(route)
 
     # Pretty print the XML
     pretty_xml = prettify(platform)
