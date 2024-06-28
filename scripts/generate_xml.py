@@ -152,6 +152,15 @@ def generate_xml(filename: str, num_fields: int):
     cloud_ram_prop = ET.SubElement(cloud_host, "prop")
     cloud_ram_prop.set("id", "ram")
     cloud_ram_prop.set("value", "16GB")
+
+    # Add the network link
+    network_comment = ET.Comment(" A network link shared by EVERY ONE ")
+    zone.append(network_comment)
+    network_link = ET.SubElement(zone, "link")
+    network_link.set("id", "network_link")
+    network_link.set("bandwidth", "50MBps")
+    network_link.set("latency", "1ms")
+
     # Pretty print the XML
     pretty_xml = prettify(platform)
 
