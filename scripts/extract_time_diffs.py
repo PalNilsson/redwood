@@ -70,3 +70,7 @@ def main():
     except KeyError as e:
         print(f"Failed to extract data from JSON file: {e}")
         exit(-1)
+
+
+if __name__ == "__main__":
+    main()
