@@ -43,13 +43,9 @@ def read_json_to_dict(file_path: str) -> dict:
 def main():
     """Perform main actions for the script."""
     # Load JSON data
-    data = read_json_to_dict('/tmp/wrench.json')
-    if not data:
-        print("Failed to load JSON data")
-        exit(-1)
-    workflow_execution = json.loads(data)
+    workflow_execution = read_json_to_dict('/tmp/wrench.json')
     if not workflow_execution:
-        print("Failed to read JSON data")
+        print("Failed to load JSON data")
         exit(-1)
 
     # Iterate through each task
@@ -60,7 +56,7 @@ def main():
             whole_task_start = task['whole_task']['start']
 
             # Calculate the difference
-            start_time_difference = whole_task_start - compute_start
+            start_time_difference = compute_start - whole_task_start
 
             # Print the result
             print(f"Task ID: {task['task_id']}")
