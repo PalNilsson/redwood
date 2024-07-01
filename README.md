@@ -34,3 +34,5 @@ script verifies that are "GFLOPS" and "RSE" entries for all queues in the file. 
 of queues.
 6. <b>XML generation</b>. `generate_xml.py`: Generate an XML file to be used for scaling tests. The script produces
 a platform file, `platform.xml`, that contains a selectable number of hosts and their connections.
+7. <b>Simulation time diffs</b>. `extract_time_diffs.py`: Extract the time differences between the starting times of the 
+job and task from a WRENCH json file.
