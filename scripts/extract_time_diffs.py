@@ -20,8 +20,6 @@
 
 """
 Extract time differences (job start - task start times) from a WRENCH JSON file.
-
-..
 """
 
 import json
