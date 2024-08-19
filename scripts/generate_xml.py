@@ -27,6 +27,7 @@ Usage: python generate_xml.py --filename <filename> --nodes <number of nodes>
 import argparse
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
+from typing import Optional, Dict
 
 
 def prettify(elem: ET.Element) -> str:
@@ -36,27 +37,6 @@ def prettify(elem: ET.Element) -> str:
     :param elem: XML element (ET.Element)
     :return: pretty-printed XML string (str).
     """
-    #rough_string = ET.tostring(elem, 'utf-8')
-    #reparsed = minidom.parseString(rough_string)
-    #pretty_string = reparsed.toprettyxml(indent="    ")  # Four spaces indentation
-
-    # Remove the XML declaration added by minidom
-    #return '\n'.join([line for line in pretty_string.split('\n') if line.strip()])
-
-    #rough_string = ET.tostring(elem, 'utf-8')
-    #reparsed = minidom.parseString(rough_string)
-    #pretty_string = reparsed.toprettyxml(indent="    ")  # Four spaces indentation
-    # Remove the XML declaration added by minidom
-    #lines = pretty_string.split('\n')
-    #pretty_lines = []
-    #for line in lines:
-    #    if line.strip() and not line.startswith('<?'):
-    #        pretty_lines.append(line)
-    #        # Add an empty line after each host element
-    #        if line.strip().startswith('</host>') or line.strip().startswith('</zone>'):
-    #            pretty_lines.append('')
-    #return '\n'.join(pretty_lines).strip()
-
     rough_string = ET.tostring(elem, 'utf-8')
     reparsed = minidom.parseString(rough_string)
     pretty_string = reparsed.toprettyxml(indent="    ")  # Four spaces indentation
@@ -72,6 +52,66 @@ def prettify(elem: ET.Element) -> str:
                 pretty_lines.append('')
 
     return '\n'.join(pretty_lines).strip()
+
+
+def add_host_with_comment(
+        zone: ET.Element,
+        comment_text: str,
+        host_id: str,
+        speed: str,
+        core: str,
+        props: Optional[Dict[str, str]] = None,
+        disk_props: Optional[Dict[str, Dict[str, str]]] = None
+):
+    """
+    Add a host element with an associated comment to the zone.
+
+    :param zone: The parent XML element to which the host is added (ET.Element)
+    :param comment_text: The text of the comment to add before the host (str)
+    :param host_id: The ID of the host (str)
+    :param speed: The speed of the host (str)
+    :param core: The number of cores of the host (str)
+    :param props: Additional properties for the host. Defaults to None (Optional[Dict[str, str]], optional)
+    :param disk_props: Properties for the nested disk element. Defaults to None (Optional[Dict[str, Dict[str, str]]], optional)
+    """
+    comment = ET.Comment(comment_text)
+    zone.append(comment)
+
+    host = ET.SubElement(zone, "host")
+    host.set("id", host_id)
+    host.set("speed", speed)
+    host.set("core", core)
+
+    if props:
+        for prop_id, prop_value in props.items():
+            prop = ET.SubElement(host, "prop")
+            prop.set("id", prop_id)
+            prop.set("value", prop_value)
+
+    if disk_props:
+        disk = ET.SubElement(host, "disk")
+        for disk_prop_id, disk_prop_value in disk_props.items():
+            disk.set(disk_prop_id, disk_prop_value)
+        for prop_id, prop_value in disk_props["props"].items():
+            prop = ET.SubElement(disk, "prop")
+            prop.set("id", prop_id)
+            prop.set("value", prop_value)
+
+
+def add_route(zone: ET.Element, src: str, dst: str):
+    """
+    Add a route element to the zone.
+
+    :param zone: The parent XML element to which the route is added (ET.Element)
+    :param src: The source of the route (str)
+    :param dst: The destination of the route (str)
+    """
+    route = ET.Element("route")
+    route.set("src", src)
+    route.set("dst", dst)
+    link_ctn = ET.SubElement(route, "link_ctn")
+    link_ctn.set("id", "network_link")
+    zone.append(route)
 
 
 def generate_xml(filename: str, num_fields: int):
@@ -91,27 +131,24 @@ def generate_xml(filename: str, num_fields: int):
     zone.set("routing", "Full")
 
     # Add the controller host element with comment
-    comment1 = ET.Comment(" The host on which the Controller will run ")
-    zone.append(comment1)
-    controller_host = ET.SubElement(zone, "host")
-    controller_host.set("id", "UserHost")
-    controller_host.set("speed", "10Gf")
-    controller_host.set("core", "1")
+    add_host_with_comment(
+        zone,
+        " The host on which the Controller will run ",
+        "UserHost",
+        "10Gf",
+        "1"
+    )
 
     # Generate the specified number of ComputeHosts
     for i in range(1, num_fields + 1):
-        comment = ET.Comment(" Another host on which the bare-metal compute service will be able to run jobs ")
-        zone.append(comment)
-
-        host = ET.SubElement(zone, "host")
-        host.set("id", f"ComputeHost{i}")
-        host.set("speed", "35Gf")
-        host.set("core", "10")
-
-        # Add the nested prop element
-        prop = ET.SubElement(host, "prop")
-        prop.set("id", "ram")
-        prop.set("value", "16GB")
+        add_host_with_comment(
+            zone,
+            f" Another host on which the bare-metal compute service will be able to run jobs ",
+            f"ComputeHost{i}",
+            "35Gf",
+            "10",
+            {"ram": "16GB"}
+        )
 
     # Generate the specified number of StorageHosts
     for i in range(1, num_fields + 1):
